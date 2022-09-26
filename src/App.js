@@ -1,25 +1,76 @@
-import logo from './logo.svg';
+import React, { useState } from 'react';
+import { ReactExcel, readFile, generateObjects } from '@ramonak/react-excel';
 import './App.css';
+import useViewCounter from './useViewCounter.hook';
+import * as FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
 
-function App() {
+const App = () => {
+  const [initialData, setInitialData] = useState(undefined);
+  const [currentSheet, setCurrentSheet] = useState({});
+  const [generatedObjects, setGeneratedObjects] = useState([]);
+
+  
+  const handleUpload = (event) => {
+    const file = event.target.files[0];
+    readFile(file)
+      .then((readedData) => setInitialData(readedData))
+      .catch((error) => console.error(error));
+  };
+
+ 
+  const handleClick = () => {
+    const result = generateObjects(currentSheet);
+    setGeneratedObjects(result);
+  };
+
+console.log(generatedObjects)
+
+  useViewCounter();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    
+    <div className='App'>
+      <input
+        type='file'
+        accept='.xlsx'
+        onChange={handleUpload}
+        id='upload'
+        style={{ display: 'none' }}
+      />
+      <label htmlFor='upload'>
+        <button
+          className='custom-button'
+          onClick={() => document.getElementById('upload').click()}
         >
-          Learn React
-        </a>
-      </header>
+          Upload
+        </button>
+      </label>
+      <ReactExcel
+        initialData={initialData}
+        onSheetUpdate={(currentSheet) => setCurrentSheet(currentSheet)}
+        activeSheetClassName=''
+        reactExcelClassName='react-excel'
+      />
+      {initialData && (
+        <button className='custom-button' onClick={handleClick}>
+          Transform
+        </button>
+      )}
+
+          {generatedObjects.length > 0 && (
+        <textarea
+          cols={70}
+          rows={30}
+          value={JSON.stringify(generatedObjects, null, 2)}
+          readOnly
+          className='text-area'
+        />
+      )}
     </div>
   );
-}
+};
 
 export default App;
+
+
