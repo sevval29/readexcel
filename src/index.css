@@ -2,5 +2,11 @@
   code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
       monospace;
+      
+  }
+
+  .text-area {
+    display: block;
+    margin: 2rem auto;
   }
   
